@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceManagerBackEnd", "ServiceManagerBackEnd\ServiceManagerBackEnd.csproj", "{60725B88-FA12-405C-A63B-06AF7D1821FE}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "servicemanagerfrontend", "ServiceManagerFrontEnd\servicemanagerfrontend.esproj", "{5598A070-7717-496E-93AC-CDEA1FA2F2DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,12 @@ Global
 		{60725B88-FA12-405C-A63B-06AF7D1821FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60725B88-FA12-405C-A63B-06AF7D1821FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60725B88-FA12-405C-A63B-06AF7D1821FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5598A070-7717-496E-93AC-CDEA1FA2F2DD}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
