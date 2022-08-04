@@ -1,27 +1,52 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <router-view />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent, nextTick, onMounted } from "vue";
+import { useStore } from "vuex";
+import { Mutations } from "@/store/enums/StoreEnums";
+import { initializeComponents } from "@/core/plugins/keenthemes";
 
 export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+  name: "app",
+  setup() {
+    const store = useStore();
+
+    onMounted(() => {
+      /**
+       * this is to override the layout config using saved data from localStorage
+       * remove this to use config only from static config (@/core/config/DefaultLayoutConfig.ts)
+       */
+      store.commit(Mutations.OVERRIDE_LAYOUT_CONFIG);
+
+      nextTick(() => {
+        initializeComponents();
+      });
+    });
+  },
 });
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+@import "~apexcharts/dist/apexcharts.css";
+@import "~quill/dist/quill.snow.css";
+@import "~animate.css";
+@import "~sweetalert2/dist/sweetalert2.css";
+@import "~nouislider/distribute/nouislider.css";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+@import "~socicon/css/socicon.css";
+@import "~line-awesome/dist/line-awesome/css/line-awesome.css";
+@import "~dropzone/dist/dropzone.css";
+@import "~@vueform/multiselect/themes/default.css";
+@import "~prism-themes/themes/prism-shades-of-purple.css";
+@import "~element-plus/dist/index.css";
+
+// Main demo style scss
+@import "assets/sass/plugins";
+@import "assets/sass/style";
+
+//RTL version styles
+//@import "assets/css/style.rtl.css";
 </style>
