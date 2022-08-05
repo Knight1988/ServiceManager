@@ -361,4 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Sensitive app settings
 /ServiceManagerBackEnd/appsettings.Development.json
+/ServiceManagerBackEnd.Tests/appsettings.Test.json
