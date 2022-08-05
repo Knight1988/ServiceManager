@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ServiceManagerBackEnd.Interfaces.Repositories;
+using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Repositories;
+using ServiceManagerBackEnd.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ServiceManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ServiceManager")));
 
+// Add Services
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 // Add Repos
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 

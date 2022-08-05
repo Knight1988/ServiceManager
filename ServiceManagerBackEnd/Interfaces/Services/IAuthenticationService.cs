@@ -2,5 +2,5 @@
 
 public interface IAuthenticationService
 {
-    Task<LoginResult> LoginAsync(string username, string password);
+    Task<(LoginResult Success, string? token)> LoginAsync(string username, string password);
 }

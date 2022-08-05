@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ServiceManagerBackEnd.Controllers;
 using ServiceManagerBackEnd.Interfaces.Services;
+using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Models.Requests;
 
 namespace ServiceManagerBackEnd.Tests.Controllers;
@@ -13,7 +15,7 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Success_ShouldReturnSuccess()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync(LoginResult.Success);
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Success, "Token"));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {
@@ -22,14 +24,18 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        response.ErrorCode.Should().Be(0);
+        var okResult = response as OkObjectResult;
+        var value = okResult.Value as BaseResponse<string?>;
+        value.Should().NotBeNull();
+        value.ErrorCode.Should().Be(0);
+        value.Data.Should().Be("Token");
     }
     
     [Test]
     public async Task TestLogin_Failed_ShouldReturnNotMatch()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync(LoginResult.UserAndPasswordNotMatch);
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.UserAndPasswordNotMatch, null));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {
@@ -38,14 +44,17 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        response.ErrorCode.Should().Be(1);
+        var okResult = response as OkObjectResult;
+        var value = okResult.Value as BaseResponse;
+        value.Should().NotBeNull();
+        value.ErrorCode.Should().Be(1);
     }
     
     [Test]
     public async Task TestLogin_Exception_ShouldReturnException()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync(LoginResult.Exception);
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Exception, null));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {
@@ -54,6 +63,9 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        response.ErrorCode.Should().Be(500);
+        var objectResult = response as ObjectResult;
+        var value = objectResult.Value as BaseResponse;
+        value.Should().NotBeNull();
+        value.ErrorCode.Should().Be(500);
     }
 }
