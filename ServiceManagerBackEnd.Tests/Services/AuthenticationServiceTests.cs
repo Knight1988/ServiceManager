@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ServiceManagerBackEnd.Interfaces.Repositories;
+using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Services;
 
@@ -16,27 +18,33 @@ public class AuthenticationServiceTests
     [Test]
     public async Task TestLogin_Match_ShouldReturnSuccess()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
+        tokenServiceMock.Setup(s => s.GenerateJwtToken(It.IsAny<User>())).Returns("Token");
         var userRepoMock = new Mock<IUserRepo>();
         userRepoMock.Setup(p => p.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync(new User
         {
             Name = "Test",
             Password = "2c2e30ff38cb4046fdfeb4be97844c49f2c0cd85e345f2653914a202e5bde244"
         });
-        var service = new AuthenticationService(userRepoMock.Object);
+        var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
+            userRepoMock.Object);
 
-        var result = await service.LoginAsync("Test", "Test");
+        var (result, token) = await service.LoginAsync("Test", "Test");
 
         result.Should().Be(LoginResult.Success);
+        token.Should().Be("Token");
     }
 
     [Test]
     public async Task TestLogin_NotFound_ShouldReturnNotMatch()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
         userRepoMock.Setup(p => p.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync(() => null);
-        var service = new AuthenticationService(userRepoMock.Object);
+        var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
+            userRepoMock.Object);
 
-        var result = await service.LoginAsync("Test", "Test");
+        var (result, _) = await service.LoginAsync("Test", "Test");
 
         result.Should().Be(LoginResult.UserAndPasswordNotMatch);
     }
@@ -44,15 +52,17 @@ public class AuthenticationServiceTests
     [Test]
     public async Task TestLogin_NotMatch_ShouldReturnNotMatch()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
         userRepoMock.Setup(p => p.GetByUsernameAsync(It.IsAny<string>())).ReturnsAsync(new User
         {
             Name = "Test",
             Password = "asd"
         });
-        var service = new AuthenticationService(userRepoMock.Object);
+        var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
+            userRepoMock.Object);
 
-        var result = await service.LoginAsync("Test", "Test");
+        var (result, _) = await service.LoginAsync("Test", "Test");
 
         result.Should().Be(LoginResult.UserAndPasswordNotMatch);
     }
@@ -60,11 +70,13 @@ public class AuthenticationServiceTests
     [Test]
     public async Task TestLogin_Exception_ShouldReturnException()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
         userRepoMock.Setup(p => p.GetByUsernameAsync(It.IsAny<string>())).Throws(new Exception("Test"));
-        var service = new AuthenticationService(userRepoMock.Object);
+        var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
+            userRepoMock.Object);
 
-        var result = await service.LoginAsync("Test", "Test");
+        var (result, _) = await service.LoginAsync("Test", "Test");
 
         result.Should().Be(LoginResult.Exception);
     }

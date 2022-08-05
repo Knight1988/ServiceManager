@@ -7,7 +7,7 @@ using ServiceManagerBackEnd.Models.Requests;
 namespace ServiceManagerBackEnd.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -18,17 +18,17 @@ public class AuthenticationController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<BaseResponse> LoginAsync(LoginRequest request)
+    public async Task<IActionResult> LoginAsync(LoginRequest request)
     {
-        var response = await _authenticationService.LoginAsync(request.Username, request.Password);
+        var (response, token) = await _authenticationService.LoginAsync(request.Username, request.Password);
         switch (response)
         {
             case LoginResult.UserAndPasswordNotMatch:
-                return ResponseFactory.Create((int) response, "User and password does not match");
+                return Ok(ResponseFactory.Create((int) response, "User and password does not match"));
             case LoginResult.Success:
-                return ResponseFactory.Success("Login Success");
+                return Ok(ResponseFactory.Success("Login Success", token));
             default:
-                return ResponseFactory.Exception("This response is not implemented");
+                return StatusCode(500, ResponseFactory.Exception("This response is not implemented"));
         }
     }
 }

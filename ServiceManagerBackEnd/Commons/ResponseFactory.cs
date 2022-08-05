@@ -9,9 +9,9 @@ public static class ResponseFactory
         return Create(0, message);
     }
     
-    public static BaseResponse Success<T>(string message, T data)
+    public static BaseResponse<T> Success<T>(string message, T data)
     {
-        return Create(0, message, data);
+        return Create<T>(0, message, data);
     }
     
     public static BaseResponse Exception(string message)
@@ -33,7 +33,7 @@ public static class ResponseFactory
         };
     }
     
-    public static BaseResponse Create<T>(int code, string message, T data)
+    public static BaseResponse<T> Create<T>(int code, string message, T data)
     {
         return new BaseResponse<T>
         {
