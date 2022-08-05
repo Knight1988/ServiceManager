@@ -7,7 +7,7 @@ using ServiceManagerBackEnd.Models.Requests;
 namespace ServiceManagerBackEnd.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
