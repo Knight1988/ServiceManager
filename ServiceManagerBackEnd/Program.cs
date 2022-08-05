@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using ServiceManagerBackEnd.Interfaces.Repositories;
+using ServiceManagerBackEnd.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add Sql
+builder.Services.AddDbContext<ServiceManagerContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ServiceManager")));
+
+// Add Repos
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 
 var app = builder.Build();
 
