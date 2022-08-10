@@ -12,14 +12,14 @@ export interface User {
 }
 
 export interface UserAuthInfo {
-  errors: unknown;
+  errorCode: number;
   user: User;
   isAuthenticated: boolean;
 }
 
 @Module
 export default class AuthModule extends VuexModule implements UserAuthInfo {
-  errors = {};
+  private _errorCode = 0;
   user = {} as User;
   isAuthenticated = !!JwtService.getToken();
 
@@ -40,24 +40,24 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
   }
 
   /**
-   * Get authentification errors
-   * @returns array
+   * Get authentication errorCode
+   * @returns number
    */
-  get getErrors() {
-    return this.errors;
+  get errorCode(): number {
+    return this._errorCode;
   }
 
   @Mutation
-  [Mutations.SET_ERROR](error) {
-    this.errors = { ...error };
+  [Mutations.SET_ERROR](errorCode) {
+    this._errorCode = errorCode;
   }
 
   @Mutation
   [Mutations.SET_AUTH](user) {
     this.isAuthenticated = true;
     this.user = user;
-    this.errors = {};
-    JwtService.saveToken(user.api_token);
+    this._errorCode = 0;
+    JwtService.saveToken(user.token);
   }
 
   @Mutation
@@ -74,18 +74,18 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
   [Mutations.PURGE_AUTH]() {
     this.isAuthenticated = false;
     this.user = {} as User;
-    this.errors = [];
+    this._errorCode = 0;
     JwtService.destroyToken();
   }
 
   @Action
   [Actions.LOGIN](credentials) {
-    return ApiService.post("login", credentials)
+    return ApiService.post("Authentication/login", credentials)
       .then(({ data }) => {
         this.context.commit(Mutations.SET_AUTH, data);
       })
       .catch(({ response }) => {
-        this.context.commit(Mutations.SET_ERROR, response.data.errors);
+        this.context.commit(Mutations.SET_ERROR, response.data.errorCode);
       });
   }
 

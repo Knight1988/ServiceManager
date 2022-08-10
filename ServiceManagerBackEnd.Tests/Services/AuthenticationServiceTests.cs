@@ -29,10 +29,10 @@ public class AuthenticationServiceTests
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
 
-        var (result, token) = await service.LoginAsync("Test", "Test");
+        var (result, response) = await service.LoginAsync("Test", "Test");
 
         result.Should().Be(LoginResult.Success);
-        token.Should().Be("Token");
+        response.Token.Should().Be("Token");
     }
 
     [Test]

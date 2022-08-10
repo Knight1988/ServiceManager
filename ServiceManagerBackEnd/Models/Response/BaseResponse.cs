@@ -1,4 +1,4 @@
-﻿namespace ServiceManagerBackEnd.Models;
+﻿namespace ServiceManagerBackEnd.Models.Response;
 
 public class BaseResponse
 {

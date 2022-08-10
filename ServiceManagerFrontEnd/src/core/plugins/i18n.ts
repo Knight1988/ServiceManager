@@ -70,6 +70,9 @@ const messages = {
     subscriptionList: "Subscription List",
     addSubscription: "Add Subscription",
     viewSubscription: "View Subscription",
+    login: {
+      wrongUserOrPassword: "Wrong username or password",
+    },
   },
   es: {
     dashboard: "Tablero",

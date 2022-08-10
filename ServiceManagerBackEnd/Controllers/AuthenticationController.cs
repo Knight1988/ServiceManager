@@ -8,7 +8,7 @@ namespace ServiceManagerBackEnd.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : CustomBaseController
 {
     private readonly IAuthenticationService _authenticationService;
 
@@ -24,11 +24,13 @@ public class AuthenticationController : ControllerBase
         switch (response)
         {
             case LoginResult.UserAndPasswordNotMatch:
-                return Ok(ResponseFactory.Create((int) response, "User and password does not match"));
+                return UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch, "User and password does not match");
             case LoginResult.Success:
-                return Ok(ResponseFactory.Success("Login Success", token));
+                return Ok("Login Success", token);
+            case LoginResult.Exception:
+                return InternalServerError( "There was error on server");
             default:
-                return StatusCode(500, ResponseFactory.Exception("This response is not implemented"));
+                return NotImplemented("This response is not implemented");
         }
     }
 }

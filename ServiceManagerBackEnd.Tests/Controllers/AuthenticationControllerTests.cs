@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ServiceManagerBackEnd.Controllers;
 using ServiceManagerBackEnd.Interfaces.Services;
-using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Models.Requests;
+using ServiceManagerBackEnd.Models.Response;
 
 namespace ServiceManagerBackEnd.Tests.Controllers;
 
@@ -15,7 +15,12 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Success_ShouldReturnSuccess()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Success, "Token"));
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Success, new LoginResponse
+        {
+            Name = "Test",
+            Username = "Test",
+            Token = "Token"
+        }));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {
@@ -25,10 +30,10 @@ public class AuthenticationControllerTests
 
         var response = await controller.LoginAsync(request);
         var okResult = response as OkObjectResult;
-        var value = okResult.Value as BaseResponse<string?>;
+        var value = okResult.Value as BaseResponse<LoginResponse>;
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(0);
-        value.Data.Should().Be("Token");
+        value.Data.Token.Should().Be("Token");
     }
     
     [Test]
@@ -44,7 +49,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as OkObjectResult;
+        var okResult = response as ObjectResult;
         var value = okResult.Value as BaseResponse;
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(1);

@@ -1,4 +1,5 @@
 ﻿using ServiceManagerBackEnd.Models;
+using ServiceManagerBackEnd.Models.Response;
 
 namespace ServiceManagerBackEnd.Commons;
 
@@ -11,17 +12,12 @@ public static class ResponseFactory
     
     public static BaseResponse<T> Success<T>(string message, T data)
     {
-        return Create<T>(0, message, data);
+        return Create(0, message, data);
     }
     
-    public static BaseResponse Exception(string message)
+    public static BaseResponse Error(int code, string message)
     {
-        return Create(500, message);
-    }
-    
-    public static BaseResponse Exception<T>(string message, T data)
-    {
-        return Create(500, message, data);
+        return Create(code, message);
     }
     
     public static BaseResponse Create(int code, string message)

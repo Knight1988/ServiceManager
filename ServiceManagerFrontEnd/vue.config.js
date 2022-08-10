@@ -1,16 +1,22 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 
 const baseFolder =
-    process.env.APPDATA !== undefined && process.env.APPDATA !== ''
-        ? `${process.env.APPDATA}/ASP.NET/https`
-        : `${process.env.HOME}/.aspnet/https`;
+  process.env.APPDATA !== undefined && process.env.APPDATA !== ""
+    ? `${process.env.APPDATA}/ASP.NET/https`
+    : `${process.env.HOME}/.aspnet/https`;
 
-const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
-const certificateName = certificateArg ? certificateArg.groups.value : "ServiceManagerFrontEnd";
+const certificateArg = process.argv
+  .map((arg) => arg.match(/--name=(?<value>.+)/i))
+  .filter(Boolean)[0];
+const certificateName = certificateArg
+  ? certificateArg.groups.value
+  : "ServiceManagerFrontEnd";
 
 if (!certificateName) {
-  console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.')
+  console.error(
+    "Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly."
+  );
   process.exit(-1);
 }
 
@@ -24,10 +30,10 @@ module.exports = {
       cert: fs.readFileSync(certFilePath),
     },
     proxy: {
-      '^/weatherforecast': {
-        target: 'https://localhost:5001/'
-      }
+      "^/api": {
+        target: "https://localhost:44358/",
+      },
     },
-    port: 5002
-  }
-}
+    port: 5002,
+  },
+};
