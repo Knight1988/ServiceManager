@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Interfaces.Services;
-using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Models.Requests;
 
 namespace ServiceManagerBackEnd.Controllers;
@@ -16,7 +15,7 @@ public class AuthenticationController : CustomBaseController
     {
         _authenticationService = authenticationService;
     }
-    
+
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync(LoginRequest request)
     {
@@ -28,7 +27,7 @@ public class AuthenticationController : CustomBaseController
             case LoginResult.Success:
                 return Ok("Login Success", token);
             case LoginResult.Exception:
-                return InternalServerError( "There was error on server");
+                return InternalServerError("There was error on server");
             default:
                 return NotImplemented("This response is not implemented");
         }
