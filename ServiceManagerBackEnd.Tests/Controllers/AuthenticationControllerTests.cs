@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Controllers;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models.Requests;
@@ -15,7 +16,7 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Success_ShouldReturnSuccess()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Success, new LoginResponse
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.Success, new LoginResponse
         {
             Name = "Test",
             Username = "Test",
@@ -40,7 +41,7 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Failed_ShouldReturnNotMatch()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.UserAndPasswordNotMatch, null));
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.UserAndPasswordNotMatch, null));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {
@@ -59,7 +60,7 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Exception_ShouldReturnException()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((LoginResult.Exception, null));
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.InternalServerError, null));
         var controller = new AuthenticationController(authenticationServiceMock.Object);
         var request = new LoginRequest
         {

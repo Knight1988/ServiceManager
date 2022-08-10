@@ -2,7 +2,8 @@
 
 public static class ErrorCodes
 {
-    public static readonly int InternalServerError = 500;
-    public static readonly int NotImplemented = 501;
-    public static readonly int UserAndPasswordNotMatch = 1;
+    public const int Success = 0;
+    public const int InternalServerError = 500;
+    public const int NotImplemented = 501;
+    public const int UserAndPasswordNotMatch = 1;
 }

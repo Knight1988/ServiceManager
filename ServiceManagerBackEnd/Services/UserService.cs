@@ -7,14 +7,20 @@ namespace ServiceManagerBackEnd.Services;
 
 public class UserService : BaseService<User>, IUserService
 {
-    public UserService(IUserRepo baseRepo) : base(baseRepo)
+    private readonly IUserRepo _userRepo;
+
+    public UserService(IUserRepo userRepo) : base(userRepo)
     {
+        _userRepo = userRepo;
     }
 
-    public override Task AddAsync(User model)
+    public override async Task AddAsync(User model)
     {
+        // check user exist
+        var user = await _userRepo.GetByUsernameAsync(model.Username);
         // encrypt password
         model.Password = Helper.EncryptPassword(model.Username, model.Password);
-        return base.AddAsync(model);
+        // add user
+        await base.AddAsync(model);
     }
 }

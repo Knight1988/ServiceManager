@@ -17,7 +17,7 @@ public class UserController : CustomBaseController
     }
 
     [HttpPost]
-    public async Task Create([FromBody] CreateUserRequest userRequest)
+    public async Task CreateAsync([FromBody] CreateUserRequest userRequest)
     {
         var user = new User()
         {

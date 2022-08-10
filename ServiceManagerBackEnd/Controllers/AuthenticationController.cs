@@ -19,17 +19,14 @@ public class AuthenticationController : CustomBaseController
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync(LoginRequest request)
     {
-        var (response, token) = await _authenticationService.LoginAsync(request.Username, request.Password);
-        switch (response)
+        var (errorCode, token) = await _authenticationService.LoginAsync(request.Username, request.Password);
+        return errorCode switch
         {
-            case LoginResult.UserAndPasswordNotMatch:
-                return UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch, "User and password does not match");
-            case LoginResult.Success:
-                return Ok("Login Success", token);
-            case LoginResult.Exception:
-                return InternalServerError("There was error on server");
-            default:
-                return NotImplemented("This response is not implemented");
-        }
+            ErrorCodes.UserAndPasswordNotMatch => UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch,
+                "User and password does not match"),
+            ErrorCodes.Success => Ok("Login Success", token),
+            ErrorCodes.InternalServerError => InternalServerError("There was error on server"),
+            _ => NotImplemented("This response is not implemented")
+        };
     }
 }
