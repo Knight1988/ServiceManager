@@ -1,4 +1,5 @@
 ﻿using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
@@ -18,6 +19,7 @@ public class UserService : BaseService<User>, IUserService
     {
         // check user exist
         var user = await _userRepo.GetByUsernameAsync(model.Username);
+        if (user != null) throw new GeneralException(ErrorCodes.DataExist, "User already exist");
         // encrypt password
         model.Password = Helper.EncryptPassword(model.Username, model.Password);
         // add user

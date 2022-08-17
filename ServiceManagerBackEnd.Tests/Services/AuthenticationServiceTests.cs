@@ -32,7 +32,7 @@ public class AuthenticationServiceTests
 
         var (result, response) = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(ErrorCodes.Success);
+        result.Should().Be(ErrorCodes.None);
         response.Token.Should().Be("Token");
     }
 

@@ -16,7 +16,7 @@ public class AuthenticationControllerTests
     public async Task TestLogin_Success_ShouldReturnSuccess()
     {
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.Success, new LoginResponse
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((Success: ErrorCodes.None, new LoginResponse
         {
             Name = "Test",
             Username = "Test",
@@ -30,7 +30,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as OkObjectResult;
+        var okResult = response as ObjectResult;
         var value = okResult.Value as BaseResponse<LoginResponse>;
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(0);
@@ -53,7 +53,7 @@ public class AuthenticationControllerTests
         var okResult = response as ObjectResult;
         var value = okResult.Value as BaseResponse;
         value.Should().NotBeNull();
-        value.ErrorCode.Should().Be(1);
+        value.ErrorCode.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
     
     [Test]

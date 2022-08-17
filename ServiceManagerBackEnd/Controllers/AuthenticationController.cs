@@ -7,7 +7,7 @@ namespace ServiceManagerBackEnd.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthenticationController : CustomBaseController
+public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
 
@@ -22,11 +22,11 @@ public class AuthenticationController : CustomBaseController
         var (errorCode, token) = await _authenticationService.LoginAsync(request.Username, request.Password);
         return errorCode switch
         {
-            ErrorCodes.UserAndPasswordNotMatch => UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch,
+            ErrorCodes.UserAndPasswordNotMatch => ActionResultFactory.UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch,
                 "User and password does not match"),
-            ErrorCodes.Success => Ok("Login Success", token),
-            ErrorCodes.InternalServerError => InternalServerError("There was error on server"),
-            _ => NotImplemented("This response is not implemented")
+            ErrorCodes.None => ActionResultFactory.Ok("Login Success", token),
+            ErrorCodes.InternalServerError => ActionResultFactory.InternalServerError("There was error on server"),
+            _ => ActionResultFactory.NotImplemented("This response is not implemented")
         };
     }
 }

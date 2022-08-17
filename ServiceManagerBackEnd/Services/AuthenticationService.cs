@@ -46,7 +46,7 @@ public class AuthenticationService : IAuthenticationService
                 Name = user.Name,
                 Token = token
             };
-            return (ErrorCodes.Success, response);
+            return (ErrorCodes.None, response);
         }
         catch (Exception e)
         {
