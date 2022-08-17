@@ -19,7 +19,7 @@ public class ServiceManagerTestContext : ServiceManagerContext
             Id = 1,
             Name = "Demo",
             Username = "admin@demo.com",
-            Password = Commons.Helper.EncryptPassword("demo@demo.com", "demo")
+            Password = Commons.Helper.EncryptPassword("admin@demo.com", "demo")
         });
 
         modelBuilder.Entity<Server>().HasData(new Server()

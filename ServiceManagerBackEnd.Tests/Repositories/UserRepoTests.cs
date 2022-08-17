@@ -24,6 +24,7 @@ public class UserRepoTests
         var user = await repo.GetByUsernameAsync("admin@demo.com");
 
         user.Name.Should().Be("Demo");
+        user.Password.Should().Be(Commons.Helper.EncryptPassword("admin@demo.com", "demo"));
     }
 
     [Test]
