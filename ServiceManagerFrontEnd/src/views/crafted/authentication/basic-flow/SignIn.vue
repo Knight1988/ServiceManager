@@ -208,6 +208,8 @@ export default defineComponent({
       const errorCode = store.getters.errorCode;
       let message = "";
       switch (errorCode) {
+        case ErrorCodes.None:
+          break;
         case ErrorCodes.UserAndPasswordNotMatch:
           message = t("login.wrongUserOrPassword");
           break;
@@ -218,10 +220,8 @@ export default defineComponent({
           message = t("invalidErrorCode");
           break;
       }
-      // const error = store.getters.getErrors[errorName];
-      const error = true;
 
-      if (!error) {
+      if (errorCode == ErrorCodes.None) {
         Swal.fire({
           text: "You have successfully logged in!",
           icon: "success",

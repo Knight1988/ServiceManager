@@ -54,6 +54,7 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
 
   @Mutation
   [Mutations.SET_AUTH](user) {
+    debugger;
     this.isAuthenticated = true;
     this.user = user;
     this._errorCode = 0;
@@ -82,7 +83,7 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
   [Actions.LOGIN](credentials) {
     return ApiService.post("Authentication/login", credentials)
       .then(({ data }) => {
-        this.context.commit(Mutations.SET_AUTH, data);
+        this.context.commit(Mutations.SET_AUTH, data.data);
       })
       .catch(({ response }) => {
         this.context.commit(Mutations.SET_ERROR, response.data.errorCode);
@@ -120,12 +121,12 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
   [Actions.VERIFY_AUTH](payload) {
     if (JwtService.getToken()) {
       ApiService.setHeader();
-      ApiService.post("verify_token", payload)
+      ApiService.post("Authentication/verify_token", payload)
         .then(({ data }) => {
           this.context.commit(Mutations.SET_AUTH, data);
         })
         .catch(({ response }) => {
-          this.context.commit(Mutations.SET_ERROR, response.data.errors);
+          this.context.commit(Mutations.SET_ERROR, response.data.errorCode);
           this.context.commit(Mutations.PURGE_AUTH);
         });
     } else {

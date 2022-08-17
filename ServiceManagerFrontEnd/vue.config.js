@@ -31,7 +31,7 @@ module.exports = {
     },
     proxy: {
       "^/api": {
-        target: "https://localhost:44358/",
+        target: "http://localhost:5005/",
       },
     },
     port: 5002,

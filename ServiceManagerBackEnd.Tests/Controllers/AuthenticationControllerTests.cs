@@ -15,6 +15,7 @@ public class AuthenticationControllerTests
     [Test]
     public async Task TestLogin_Success_ShouldReturnSuccess()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((Success: ErrorCodes.None, new LoginResponse
         {
@@ -22,7 +23,7 @@ public class AuthenticationControllerTests
             Username = "Test",
             Token = "Token"
         }));
-        var controller = new AuthenticationController(authenticationServiceMock.Object);
+        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -40,9 +41,10 @@ public class AuthenticationControllerTests
     [Test]
     public async Task TestLogin_Failed_ShouldReturnNotMatch()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.UserAndPasswordNotMatch, null));
-        var controller = new AuthenticationController(authenticationServiceMock.Object);
+        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -59,9 +61,10 @@ public class AuthenticationControllerTests
     [Test]
     public async Task TestLogin_Exception_ShouldReturnException()
     {
+        var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.InternalServerError, null));
-        var controller = new AuthenticationController(authenticationServiceMock.Object);
+        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -73,5 +76,35 @@ public class AuthenticationControllerTests
         var value = objectResult.Value as BaseResponse;
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(500);
+    }
+
+    [Test]
+    public async Task Token_Valid_ShouldReturnErrorCodeNone()
+    {
+        var tokenServiceMock = new Mock<ITokenService>();
+        tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>())).Returns(true);
+        var authenticationServiceMock = new Mock<IAuthenticationService>();
+        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+
+        var response = await controller.VerifyTokenAsync(new VerifyTokenRequest());
+        var value = response.GetValue<BaseResponse>();
+
+        value.Should().NotBeNull();
+        value.ErrorCode.Should().Be(ErrorCodes.None);
+    }
+
+    [Test]
+    public async Task Token_Invalid_ShouldReturnTokenInvalid()
+    {
+        var tokenServiceMock = new Mock<ITokenService>();
+        tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>())).Returns(false);
+        var authenticationServiceMock = new Mock<IAuthenticationService>();
+        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+
+        var response = await controller.VerifyTokenAsync(new VerifyTokenRequest());
+        var value = response.GetValue<BaseResponse>();
+
+        value.Should().NotBeNull();
+        value.ErrorCode.Should().Be(ErrorCodes.TokenInvalid);
     }
 }
