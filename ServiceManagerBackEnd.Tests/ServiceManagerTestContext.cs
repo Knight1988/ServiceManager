@@ -18,7 +18,7 @@ public class ServiceManagerTestContext : ServiceManagerContext
         {
             Id = 1,
             Name = "Demo",
-            Username = "demo@demo.com",
+            Username = "admin@demo.com",
             Password = Commons.Helper.EncryptPassword("demo@demo.com", "demo")
         });
 
