@@ -1,6 +1,8 @@
-﻿namespace ServiceManagerBackEnd.Interfaces.Services;
+﻿using ServiceManagerBackEnd.Models.Response;
+
+namespace ServiceManagerBackEnd.Interfaces.Services;
 
 public interface IAuthenticationService
 {
-    Task<(LoginResult Success, string? token)> LoginAsync(string username, string password);
+    Task<(int errorCode, LoginResponse? response)> LoginAsync(string username, string password);
 }

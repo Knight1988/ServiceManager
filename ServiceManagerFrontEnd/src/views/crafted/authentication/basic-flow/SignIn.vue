@@ -44,13 +44,13 @@
           tabindex="1"
           class="form-control form-control-lg form-control-solid"
           type="text"
-          name="email"
+          name="username"
           autocomplete="off"
         />
         <!--end::Input-->
         <div class="fv-plugins-message-container">
           <div class="fv-help-block">
-            <ErrorMessage name="email" />
+            <ErrorMessage name="username" />
           </div>
         </div>
       </div>
@@ -168,6 +168,8 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2/dist/sweetalert2.min.js";
 import * as Yup from "yup";
+import { useI18n } from "vue-i18n";
+import ErrorCodes from "@/core/commons/ErrorCodes";
 
 export default defineComponent({
   name: "sign-in",
@@ -177,6 +179,7 @@ export default defineComponent({
     ErrorMessage,
   },
   setup() {
+    const { t } = useI18n({});
     const store = useStore();
     const router = useRouter();
 
@@ -184,7 +187,7 @@ export default defineComponent({
 
     //Create form validation object
     const login = Yup.object().shape({
-      email: Yup.string().email().required().label("Email"),
+      username: Yup.string().email().required().label("Username"),
       password: Yup.string().min(4).required().label("Password"),
     });
 
@@ -202,8 +205,21 @@ export default defineComponent({
 
       // Send login request
       await store.dispatch(Actions.LOGIN, values);
-      const [errorName] = Object.keys(store.getters.getErrors);
-      const error = store.getters.getErrors[errorName];
+      const errorCode = store.getters.errorCode;
+      let message = "";
+      switch (errorCode) {
+        case ErrorCodes.UserAndPasswordNotMatch:
+          message = t("login.wrongUserOrPassword");
+          break;
+        case ErrorCodes.InternalServerError:
+          message = t("internalServerError");
+          break;
+        default:
+          message = t("invalidErrorCode");
+          break;
+      }
+      // const error = store.getters.getErrors[errorName];
+      const error = true;
 
       if (!error) {
         Swal.fire({
@@ -220,7 +236,7 @@ export default defineComponent({
         });
       } else {
         Swal.fire({
-          text: error[0],
+          text: message,
           icon: "error",
           buttonsStyling: false,
           confirmButtonText: "Try again!",

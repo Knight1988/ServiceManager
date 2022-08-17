@@ -13,22 +13,22 @@ public abstract class BaseService<T> : IBaseService<T> where T : class, IBaseMod
         _baseRepo = baseRepo;
     }
 
-    public async Task<T?> GetAsync(int id)
+    public virtual async Task<T?> GetAsync(int id)
     {
         return await _baseRepo.GetAsync(id);
     }
 
-    public async Task AddAsync(T model)
+    public virtual async Task AddAsync(T model)
     {
         await _baseRepo.AddAsync(model);
     }
 
-    public async Task UpdateAsync(T model)
+    public virtual async Task UpdateAsync(T model)
     {
         await _baseRepo.UpdateAsync(model);
     }
 
-    public async Task DeleteAsync(T model)
+    public virtual async Task DeleteAsync(T model)
     {
         await _baseRepo.DeleteAsync(model);
     }

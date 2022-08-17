@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
@@ -29,10 +30,10 @@ public class AuthenticationServiceTests
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
 
-        var (result, token) = await service.LoginAsync("Test", "Test");
+        var (result, response) = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(LoginResult.Success);
-        token.Should().Be("Token");
+        result.Should().Be(ErrorCodes.None);
+        response.Token.Should().Be("Token");
     }
 
     [Test]
@@ -46,7 +47,7 @@ public class AuthenticationServiceTests
 
         var (result, _) = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(LoginResult.UserAndPasswordNotMatch);
+        result.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
 
     [Test]
@@ -64,7 +65,7 @@ public class AuthenticationServiceTests
 
         var (result, _) = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(LoginResult.UserAndPasswordNotMatch);
+        result.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
 
     [Test]
@@ -78,6 +79,6 @@ public class AuthenticationServiceTests
 
         var (result, _) = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(LoginResult.Exception);
+        result.Should().Be(ErrorCodes.InternalServerError);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
+using ServiceManagerBackEnd.Models.Response;
 
 namespace ServiceManagerBackEnd.Services;
 
@@ -17,7 +18,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepo = userRepo;
     }
     
-    public async Task<(LoginResult Success, string? token)> LoginAsync(string username, string password)
+    public async Task<(int errorCode, LoginResponse? response)> LoginAsync(string username, string password)
     {
         try
         {
@@ -26,24 +27,31 @@ public class AuthenticationService : IAuthenticationService
             if (user == null)
             {
                 _logger.LogInformation("User {Username} not found", username);
-                return (LoginResult.UserAndPasswordNotMatch, null);
+                return (ErrorCodes.UserAndPasswordNotMatch, null);
             }
 
             var encryptedPassword = Helper.EncryptPassword(username, password);
             if (user.Password != encryptedPassword)
             {
                 _logger.LogInformation("Password not match");
-                return (LoginResult.UserAndPasswordNotMatch, null);
+                return (ErrorCodes.UserAndPasswordNotMatch, null);
             }
 
             _logger.LogInformation("User {Username} login success", username);
             var token = _tokenService.GenerateJwtToken(user);
-            return (LoginResult.Success, token);
+
+            var response = new LoginResponse()
+            {
+                Username = user.Username,
+                Name = user.Name,
+                Token = token
+            };
+            return (ErrorCodes.None, response);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "User {Username} login failed", username);
-            return (LoginResult.Exception, null);
+            return (ErrorCodes.InternalServerError, null);
         }
     }
 }

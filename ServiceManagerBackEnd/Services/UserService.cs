@@ -1,4 +1,6 @@
-﻿using ServiceManagerBackEnd.Interfaces.Repositories;
+﻿using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
+using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
 
@@ -6,7 +8,21 @@ namespace ServiceManagerBackEnd.Services;
 
 public class UserService : BaseService<User>, IUserService
 {
-    public UserService(IUserRepo baseRepo) : base(baseRepo)
+    private readonly IUserRepo _userRepo;
+
+    public UserService(IUserRepo userRepo) : base(userRepo)
     {
+        _userRepo = userRepo;
+    }
+
+    public override async Task AddAsync(User model)
+    {
+        // check user exist
+        var user = await _userRepo.GetByUsernameAsync(model.Username);
+        if (user != null) throw new GeneralException(ErrorCodes.DataExist, "User already exist");
+        // encrypt password
+        model.Password = Helper.EncryptPassword(model.Username, model.Password);
+        // add user
+        await base.AddAsync(model);
     }
 }
