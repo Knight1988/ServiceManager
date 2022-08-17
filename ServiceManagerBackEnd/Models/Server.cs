@@ -2,13 +2,12 @@
 
 namespace ServiceManagerBackEnd.Models;
 
-public class User : IBaseModel
+public class Server : IBaseModel
 {
     public int Id { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public int UserId { get; set; }
     public string Name { get; set; }
+    public DateTime LastPing { get; set; }
     public bool IsDeleted { get; set; }
-    
-    public IList<Server> Servers { get; set; }
+    public User User { get; set; }
 }
