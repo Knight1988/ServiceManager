@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Repositories;
 using ServiceManagerBackEnd.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.WriteTo.File("Logs\\log.txt", rollingInterval: RollingInterval.Day);
+});
 
 // Add services to the container.
 
