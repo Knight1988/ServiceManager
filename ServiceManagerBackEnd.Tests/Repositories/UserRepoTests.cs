@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Repositories;
 
 namespace ServiceManagerBackEnd.Tests.Repositories;
@@ -15,15 +14,6 @@ public class UserRepoTests
         // init database
         _context = Helper.GetDataContext();
         await _context.Database.EnsureCreatedAsync();
-        
-        // Seed data
-        await _context.Users.AddAsync(new User()
-        {
-            Name = "Test",
-            Username = "Test",
-            Password = "2c2e30ff38cb4046fdfeb4be97844c49f2c0cd85e345f2653914a202e5bde244"
-        });
-        await _context.SaveChangesAsync();
     }
 
     [Test]
@@ -31,9 +21,10 @@ public class UserRepoTests
     {
         var repo = new UserRepo(_context);
 
-        var user = await repo.GetByUsernameAsync("Test");
+        var user = await repo.GetByUsernameAsync("admin@demo.com");
 
-        user.Name.Should().Be("Test");
+        user.Name.Should().Be("Demo");
+        user.Password.Should().Be(Commons.Helper.EncryptPassword("admin@demo.com", "demo"));
     }
 
     [Test]
