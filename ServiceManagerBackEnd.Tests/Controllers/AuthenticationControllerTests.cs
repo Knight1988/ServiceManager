@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Controllers;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models.Requests;
 using ServiceManagerBackEnd.Models.Response;
@@ -17,12 +18,12 @@ public class AuthenticationControllerTests
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((Success: ErrorCodes.None, new LoginResponse
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync(new LoginResponse
         {
             Name = "Test",
             Username = "Test",
             Token = "Token"
-        }));
+        });
         var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
@@ -43,7 +44,8 @@ public class AuthenticationControllerTests
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.UserAndPasswordNotMatch, null));
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test"))
+            .ThrowsAsync(new GeneralException(ErrorCodes.UserAndPasswordNotMatch, "Password not match"));
         var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
@@ -63,7 +65,8 @@ public class AuthenticationControllerTests
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test")).ReturnsAsync((ErrorCodes.InternalServerError, null));
+        authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test"))
+            .ThrowsAsync(new Exception( "This is exception"));
         var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {

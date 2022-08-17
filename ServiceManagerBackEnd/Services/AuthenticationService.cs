@@ -1,4 +1,5 @@
 ﻿using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models.Response;
@@ -18,40 +19,32 @@ public class AuthenticationService : IAuthenticationService
         _userRepo = userRepo;
     }
     
-    public async Task<(int errorCode, LoginResponse? response)> LoginAsync(string username, string password)
+    public async Task<LoginResponse> LoginAsync(string username, string password)
     {
-        try
+        _logger.LogInformation("Start check login user {Username}", username);
+        var user = await _userRepo.GetByUsernameAsync(username);
+        if (user == null)
         {
-            _logger.LogInformation("Start check login user {Username}", username);
-            var user = await _userRepo.GetByUsernameAsync(username);
-            if (user == null)
-            {
-                _logger.LogInformation("User {Username} not found", username);
-                return (ErrorCodes.UserAndPasswordNotMatch, null);
-            }
-
-            var encryptedPassword = Helper.EncryptPassword(username, password);
-            if (user.Password != encryptedPassword)
-            {
-                _logger.LogInformation("Password not match");
-                return (ErrorCodes.UserAndPasswordNotMatch, null);
-            }
-
-            _logger.LogInformation("User {Username} login success", username);
-            var token = _tokenService.GenerateJwtToken(user);
-
-            var response = new LoginResponse()
-            {
-                Username = user.Username,
-                Name = user.Name,
-                Token = token
-            };
-            return (ErrorCodes.None, response);
+            _logger.LogInformation("User {Username} not found", username);
+            throw new GeneralException(ErrorCodes.UserAndPasswordNotMatch, $"User {username} not found");
         }
-        catch (Exception e)
+
+        var encryptedPassword = Helper.EncryptPassword(username, password);
+        if (user.Password != encryptedPassword)
         {
-            _logger.LogError(e, "User {Username} login failed", username);
-            return (ErrorCodes.InternalServerError, null);
+            _logger.LogInformation("Password not match");
+            throw new GeneralException(ErrorCodes.UserAndPasswordNotMatch, "Password not match");
         }
+
+        _logger.LogInformation("User {Username} login success", username);
+        var token = _tokenService.GenerateJwtToken(user);
+
+        var response = new LoginResponse()
+        {
+            Username = user.Username,
+            Name = user.Name,
+            Token = token
+        };
+        return response;
     }
 }

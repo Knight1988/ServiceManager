@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models.Requests;
 
@@ -21,15 +22,24 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync(LoginRequest request)
     {
-        var (errorCode, loginResponse) = await _authenticationService.LoginAsync(request.Username, request.Password);
-        return errorCode switch
+        try
         {
-            ErrorCodes.UserAndPasswordNotMatch => ActionResultFactory.UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch,
-                "User and password does not match"),
-            ErrorCodes.None => ActionResultFactory.Ok("Login Success", loginResponse),
-            ErrorCodes.InternalServerError => ActionResultFactory.InternalServerError("There was error on server"),
-            _ => ActionResultFactory.NotImplemented("This response is not implemented")
-        };
+            var loginResponse = await _authenticationService.LoginAsync(request.Username, request.Password);
+            return ActionResultFactory.Ok("Login Success", loginResponse);
+        }
+        catch (GeneralException e)
+        {
+            return e.ErrorCode switch
+            {
+                ErrorCodes.UserAndPasswordNotMatch => ActionResultFactory.UnprocessableEntity(ErrorCodes.UserAndPasswordNotMatch,
+                    "User and password does not match"),
+                _ => ActionResultFactory.InternalServerError("There was error on server")
+            };
+        }
+        catch (Exception e)
+        {
+            return ActionResultFactory.InternalServerError("There was error on server");
+        }
     }
 
     [HttpPost("verify_token")]

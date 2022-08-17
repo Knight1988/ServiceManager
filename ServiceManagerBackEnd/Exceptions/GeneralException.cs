@@ -1,6 +1,4 @@
-﻿using ServiceManagerBackEnd.Commons;
-
-namespace ServiceManagerBackEnd.Exceptions;
+﻿namespace ServiceManagerBackEnd.Exceptions;
 
 public class GeneralException : Exception
 {

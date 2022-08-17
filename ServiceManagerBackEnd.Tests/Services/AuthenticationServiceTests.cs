@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Repositories;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
@@ -30,14 +31,14 @@ public class AuthenticationServiceTests
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
 
-        var (result, response) = await service.LoginAsync("Test", "Test");
+        var response = await service.LoginAsync("Test", "Test");
 
-        result.Should().Be(ErrorCodes.None);
+        response.Name.Should().Be("Test");
         response.Token.Should().Be("Token");
     }
 
     [Test]
-    public async Task TestLogin_NotFound_ShouldReturnNotMatch()
+    public async Task TestLogin_NotFound_ShouldThrowGeneralException()
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
@@ -45,13 +46,13 @@ public class AuthenticationServiceTests
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
 
-        var (result, _) = await service.LoginAsync("Test", "Test");
+        var act = async () => { await service.LoginAsync("Test", "Test"); };
 
-        result.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
+        await act.Should().ThrowAsync<GeneralException>();
     }
 
     [Test]
-    public async Task TestLogin_NotMatch_ShouldReturnNotMatch()
+    public async Task TestLogin_NotMatch_ShouldThrowGeneralException()
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
@@ -62,14 +63,14 @@ public class AuthenticationServiceTests
         });
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
+        
+        var act = async () => { await service.LoginAsync("Test", "Test"); };
 
-        var (result, _) = await service.LoginAsync("Test", "Test");
-
-        result.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
+        await act.Should().ThrowAsync<GeneralException>();
     }
 
     [Test]
-    public async Task TestLogin_Exception_ShouldReturnException()
+    public async Task TestLogin_Exception_ShouldThrowException()
     {
         var tokenServiceMock = new Mock<ITokenService>();
         var userRepoMock = new Mock<IUserRepo>();
@@ -77,8 +78,8 @@ public class AuthenticationServiceTests
         var service = new AuthenticationService(NullLogger<AuthenticationService>.Instance, tokenServiceMock.Object,
             userRepoMock.Object);
 
-        var (result, _) = await service.LoginAsync("Test", "Test");
+        var act = async () => { await service.LoginAsync("Test", "Test"); };
 
-        result.Should().Be(ErrorCodes.InternalServerError);
+        await act.Should().ThrowAsync<Exception>();
     }
 }

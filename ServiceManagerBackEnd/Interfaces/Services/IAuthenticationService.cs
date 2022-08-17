@@ -4,5 +4,5 @@ namespace ServiceManagerBackEnd.Interfaces.Services;
 
 public interface IAuthenticationService
 {
-    Task<(int errorCode, LoginResponse? response)> LoginAsync(string username, string password);
+    Task<LoginResponse> LoginAsync(string username, string password);
 }
