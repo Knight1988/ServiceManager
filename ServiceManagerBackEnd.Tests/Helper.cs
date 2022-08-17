@@ -17,10 +17,10 @@ public static class Helper
         return config;
     }
 
-    public static ServiceManagerContext GetDataContext()
+    public static ServiceManagerTestContext GetDataContext()
     {
         var configuration = InitConfiguration();
-        return new ServiceManagerContext(
+        return new ServiceManagerTestContext(
                 new DbContextOptionsBuilder<ServiceManagerContext>()
                     .UseSqlServer(configuration.GetConnectionString("ServiceManager"))
                     .Options);

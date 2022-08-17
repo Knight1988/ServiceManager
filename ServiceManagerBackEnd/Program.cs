@@ -23,6 +23,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 // Add Repos
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IServerRepo, ServerRepo>();
 
 var app = builder.Build();
 
