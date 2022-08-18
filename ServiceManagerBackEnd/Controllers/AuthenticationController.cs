@@ -45,12 +45,19 @@ public class AuthenticationController : ControllerBase
     [HttpPost("verify_token")]
     public async Task<IActionResult> VerifyTokenAsync([FromBody] VerifyTokenRequest request)
     {
-        var token = request.Token;
-        var result = _tokenService.ValidateToken(token);
-        return result switch
+        try
         {
-            true => ActionResultFactory.Ok("Token valid", token),
-            _ => ActionResultFactory.UnprocessableEntity(ErrorCodes.TokenInvalid, "Token invalid")
-        };
+            var id = _tokenService.GetUserId(request.Token);
+            var loginResponse = await _authenticationService.RefreshTokenAsync(id);
+            return ActionResultFactory.Ok("Verify token success", loginResponse);
+        }
+        catch (GeneralException e)
+        {
+            return ActionResultFactory.UnprocessableEntity(e.ErrorCode, e.Message);
+        }
+        catch (Exception e)
+        {
+            return ActionResultFactory.InternalServerError();
+        }
     }
 }

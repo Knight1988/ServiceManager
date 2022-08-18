@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
 using ServiceManagerBackEnd.Services;
@@ -31,9 +32,7 @@ public class TokenServiceTests
         {
             Id = 1
         });
-        var isValid = tokenService.ValidateToken(token);
-
-        isValid.Should().BeTrue();
+        tokenService.ValidateToken(token);
     }
     
     [Test]
@@ -42,9 +41,9 @@ public class TokenServiceTests
         var dateTimeServiceMock = new Mock<IDateTimeService>();
         var tokenService = new TokenService(_config, dateTimeServiceMock.Object);
         
-        var isValid = tokenService.ValidateToken("asd");
+        var act = () => tokenService.ValidateToken("asd");
 
-        isValid.Should().BeFalse();
+        act.Should().Throw<TokenInvalidException>();
     }
     
     [Test]
@@ -59,8 +58,8 @@ public class TokenServiceTests
             Id = 1
         });
         await Task.Delay(1000);
-        var isValid = tokenService.ValidateToken(token);
+        var act = () => tokenService.ValidateToken(token);
 
-        isValid.Should().BeFalse();
+        act.Should().Throw<TokenExpiredException>();
     }
 }

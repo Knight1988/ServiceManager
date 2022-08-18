@@ -10,4 +10,6 @@ public static class ErrorCodes
     // user error codes start with 2000
     public const int UserAndPasswordNotMatch = 2000;
     public const int TokenInvalid = 2001;
+    public const int TokenExpired = 2002;
+    public const int UserNotFound = 2003;
 }

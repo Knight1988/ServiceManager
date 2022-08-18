@@ -37,7 +37,7 @@ public static class ActionResultFactory
         return StatusCode(StatusCodes.Status200OK, ErrorCodes.None, message, data);
     }
 
-    public static ObjectResult InternalServerError(string message)
+    public static ObjectResult InternalServerError(string message = "Server encounter error")
     {
         return StatusCode(StatusCodes.Status500InternalServerError, ErrorCodes.InternalServerError, message);
     }

@@ -85,7 +85,7 @@ public class AuthenticationControllerTests
     public async Task Token_Valid_ShouldReturnErrorCodeNone()
     {
         var tokenServiceMock = new Mock<ITokenService>();
-        tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>())).Returns(true);
+        tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>()));
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
 
@@ -100,8 +100,9 @@ public class AuthenticationControllerTests
     public async Task Token_Invalid_ShouldReturnTokenInvalid()
     {
         var tokenServiceMock = new Mock<ITokenService>();
-        tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>())).Returns(false);
         var authenticationServiceMock = new Mock<IAuthenticationService>();
+        authenticationServiceMock.Setup(s => s.RefreshTokenAsync(It.IsAny<int>()))
+            .ThrowsAsync(new TokenInvalidException());
         var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
 
         var response = await controller.VerifyTokenAsync(new VerifyTokenRequest());

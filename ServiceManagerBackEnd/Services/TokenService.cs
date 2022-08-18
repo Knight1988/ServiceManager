@@ -2,6 +2,8 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using ServiceManagerBackEnd.Commons;
+using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Services;
 using ServiceManagerBackEnd.Models;
 
@@ -34,22 +36,42 @@ public class TokenService : ITokenService
         return tokenHandler.WriteToken(token);
     }
     
-    public bool ValidateToken(string authToken)
+    public void ValidateToken(string token)
     {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = GetValidationParameters();
+        SecurityToken securityToken;
         try
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = GetValidationParameters();
-
-            tokenHandler.ValidateToken(authToken, validationParameters, out var securityToken);
-            return securityToken.ValidTo >= DateTime.Now;
+            tokenHandler.ValidateToken(token, validationParameters, out securityToken);
         }
         catch (Exception e)
         {
-            return false;
+            throw new TokenInvalidException(e);
+        }
+        if (securityToken.ValidTo < DateTime.Now)
+        {
+            throw new TokenExpiredException();
         }
     }
-    
+
+    public JwtSecurityToken Decode(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = handler.ReadJwtToken(token);
+        return jwtSecurityToken;
+    }
+
+    public int GetUserId(string token)
+    {
+        ValidateToken(token);
+        var jwtSecurityToken = Decode(token);
+        var claim = jwtSecurityToken.Claims.FirstOrDefault(p => p.Type == "id");
+        if (claim == null) throw new GeneralException(ErrorCodes.TokenInvalid, "Id not found");
+        var userId = Convert.ToInt32(claim.Value);
+        return userId;
+    }
+
     private TokenValidationParameters GetValidationParameters()
     {
         var secret = _configuration.GetValue<string>("Jwt:Secret");

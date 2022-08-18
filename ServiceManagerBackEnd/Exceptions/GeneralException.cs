@@ -6,11 +6,11 @@ public class GeneralException : Exception
     
     public GeneralException(int errorCode, string message) : base(message)
     {
-        this.ErrorCode = errorCode;
+        ErrorCode = errorCode;
     }
 
-    public GeneralException()
+    public GeneralException(int errorCode, string message, Exception innerException) : base(message, innerException)
     {
-        throw new NotImplementedException();
+        ErrorCode = errorCode;
     }
 }

@@ -1,9 +1,11 @@
-﻿using ServiceManagerBackEnd.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
+using ServiceManagerBackEnd.Models;
 
 namespace ServiceManagerBackEnd.Interfaces.Services;
 
 public interface ITokenService
 {
     string GenerateJwtToken(User user);
-    bool ValidateToken(string token);
+    void ValidateToken(string token);
+    int GetUserId(string token);
 }

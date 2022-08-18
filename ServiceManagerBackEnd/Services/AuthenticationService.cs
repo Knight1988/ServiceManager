@@ -47,4 +47,19 @@ public class AuthenticationService : IAuthenticationService
         };
         return response;
     }
+
+    public async Task<LoginResponse> RefreshTokenAsync(int id)
+    {
+        var user = await _userRepo.GetAsync(id);
+        if (user == null) throw new UserNotFoundException();
+        
+        var token = _tokenService.GenerateJwtToken(user);
+        var response = new LoginResponse()
+        {
+            Username = user.Username,
+            Name = user.Name,
+            Token = token
+        };
+        return response;
+    }
 }
