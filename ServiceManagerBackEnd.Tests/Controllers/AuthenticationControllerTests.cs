@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Controllers;
@@ -24,7 +24,7 @@ public class AuthenticationControllerTests
             Username = "Test",
             Token = "Token"
         });
-        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+        var controller = new AuthenticationController(NullLogger<AuthenticationController>.Instance, authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -32,8 +32,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as ObjectResult;
-        var value = okResult.Value as BaseResponse<LoginResponse>;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(0);
         value.Data.Token.Should().Be("Token");
@@ -46,7 +45,7 @@ public class AuthenticationControllerTests
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test"))
             .ThrowsAsync(new GeneralException(ErrorCodes.UserAndPasswordNotMatch, "Password not match"));
-        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+        var controller = new AuthenticationController(NullLogger<AuthenticationController>.Instance, authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -54,8 +53,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as ObjectResult;
-        var value = okResult.Value as BaseResponse;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
@@ -67,7 +65,7 @@ public class AuthenticationControllerTests
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.LoginAsync("Test", "Test"))
             .ThrowsAsync(new Exception( "This is exception"));
-        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+        var controller = new AuthenticationController(NullLogger<AuthenticationController>.Instance, authenticationServiceMock.Object, tokenServiceMock.Object);
         var request = new LoginRequest
         {
             Username = "Test",
@@ -75,8 +73,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var objectResult = response as ObjectResult;
-        var value = objectResult.Value as BaseResponse;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(500);
     }
@@ -87,7 +84,7 @@ public class AuthenticationControllerTests
         var tokenServiceMock = new Mock<ITokenService>();
         tokenServiceMock.Setup(s => s.ValidateToken(It.IsAny<string>()));
         var authenticationServiceMock = new Mock<IAuthenticationService>();
-        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+        var controller = new AuthenticationController(NullLogger<AuthenticationController>.Instance, authenticationServiceMock.Object, tokenServiceMock.Object);
 
         var response = await controller.VerifyTokenAsync(new VerifyTokenRequest());
         var value = response.GetValue<BaseResponse>();
@@ -103,7 +100,7 @@ public class AuthenticationControllerTests
         var authenticationServiceMock = new Mock<IAuthenticationService>();
         authenticationServiceMock.Setup(s => s.RefreshTokenAsync(It.IsAny<int>()))
             .ThrowsAsync(new TokenInvalidException());
-        var controller = new AuthenticationController(authenticationServiceMock.Object, tokenServiceMock.Object);
+        var controller = new AuthenticationController(NullLogger<AuthenticationController>.Instance, authenticationServiceMock.Object, tokenServiceMock.Object);
 
         var response = await controller.VerifyTokenAsync(new VerifyTokenRequest());
         var value = response.GetValue<BaseResponse>();

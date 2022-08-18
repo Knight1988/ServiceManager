@@ -12,9 +12,11 @@ public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ITokenService _tokenService;
+    private readonly ILogger<AuthenticationController> _logger;
 
-    public AuthenticationController(IAuthenticationService authenticationService, ITokenService tokenService)
+    public AuthenticationController(ILogger<AuthenticationController> logger, IAuthenticationService authenticationService, ITokenService tokenService)
     {
+        _logger = logger;
         _authenticationService = authenticationService;
         _tokenService = tokenService;
     }
@@ -38,6 +40,7 @@ public class AuthenticationController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Failed to process login request");
             return ActionResultFactory.InternalServerError("There was error on server");
         }
     }
@@ -57,6 +60,7 @@ public class AuthenticationController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Failed to verify token");
             return ActionResultFactory.InternalServerError();
         }
     }
