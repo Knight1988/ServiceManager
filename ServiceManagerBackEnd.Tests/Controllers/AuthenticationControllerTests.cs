@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ServiceManagerBackEnd.Commons;
@@ -33,8 +32,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as ObjectResult;
-        var value = okResult.Value as BaseResponse<LoginResponse>;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(0);
         value.Data.Token.Should().Be("Token");
@@ -55,8 +53,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var okResult = response as ObjectResult;
-        var value = okResult.Value as BaseResponse;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
@@ -76,8 +73,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var objectResult = response as ObjectResult;
-        var value = objectResult.Value as BaseResponse;
+        var value = response.GetValue<BaseResponse<LoginResponse>>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(500);
     }
