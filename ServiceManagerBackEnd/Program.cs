@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ServiceManagerContext>(options =>
 
 // Add Services
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IDateTimeService, DateTimeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 // Add Repos

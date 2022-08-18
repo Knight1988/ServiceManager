@@ -7,6 +7,9 @@ public static class ErrorCodes
     public const int NotImplemented = 501;
     // system wise error codes start with 1000
     public const int DataExist = 1000;
-    // use error codes start with 2000
+    // user error codes start with 2000
     public const int UserAndPasswordNotMatch = 2000;
+    public const int TokenInvalid = 2001;
+    public const int TokenExpired = 2002;
+    public const int UserNotFound = 2003;
 }
