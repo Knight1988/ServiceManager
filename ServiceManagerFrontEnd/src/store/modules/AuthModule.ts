@@ -8,7 +8,7 @@ export interface User {
   surname: string;
   email: string;
   password: string;
-  api_token: string;
+  token: string;
 }
 
 export interface UserAuthInfo {
@@ -54,7 +54,6 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
 
   @Mutation
   [Mutations.SET_AUTH](user) {
-    debugger;
     this.isAuthenticated = true;
     this.user = user;
     this._errorCode = 0;
@@ -123,7 +122,7 @@ export default class AuthModule extends VuexModule implements UserAuthInfo {
       ApiService.setHeader();
       ApiService.post("Authentication/verify_token", payload)
         .then(({ data }) => {
-          this.context.commit(Mutations.SET_AUTH, data);
+          this.context.commit(Mutations.SET_AUTH, data.data);
         })
         .catch(({ response }) => {
           this.context.commit(Mutations.SET_ERROR, response.data.errorCode);
