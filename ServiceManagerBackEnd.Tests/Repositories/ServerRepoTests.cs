@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using NUnit.Framework;
 using ServiceManagerBackEnd.Repositories;
 
 namespace ServiceManagerBackEnd.Tests.Repositories;
@@ -18,7 +17,7 @@ public class ServerRepoTests
     }
 
     [Test]
-    public async Task GetUserServerList_ShouldReturnNotDeletedServer()
+    public async Task GetUserServerList_ShouldNotReturnDeletedServer()
     {
         var serverRepo = new ServerRepo(_context);
 
