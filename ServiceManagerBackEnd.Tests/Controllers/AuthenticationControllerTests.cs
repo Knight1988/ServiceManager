@@ -53,7 +53,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var value = response.GetValue<BaseResponse<LoginResponse>>();
+        var value = response.GetValue<BaseResponse>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(ErrorCodes.UserAndPasswordNotMatch);
     }
@@ -73,7 +73,7 @@ public class AuthenticationControllerTests
         };
 
         var response = await controller.LoginAsync(request);
-        var value = response.GetValue<BaseResponse<LoginResponse>>();
+        var value = response.GetValue<BaseResponse>();
         value.Should().NotBeNull();
         value.ErrorCode.Should().Be(500);
     }
