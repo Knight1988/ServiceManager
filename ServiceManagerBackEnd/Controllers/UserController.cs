@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServiceManagerBackEnd.Commons;
 using ServiceManagerBackEnd.Exceptions;
 using ServiceManagerBackEnd.Interfaces.Services;
@@ -20,6 +22,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
+    [CustomAuthorization()]
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequest userRequest)
     {

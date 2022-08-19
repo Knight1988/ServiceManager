@@ -22,18 +22,21 @@ public class TokenService : ITokenService
     
     public string GenerateJwtToken(User user)
     {
-        // generate token that is valid for 7 days
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var secret = _configuration.GetValue<string>("Jwt:Secret");
-        var key = Encoding.ASCII.GetBytes(secret);
-        var tokenDescriptor = new SecurityTokenDescriptor
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-            Expires = _dateTimeService.TokenExpireDate(),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            new Claim("Id", user.Id.ToString()),
         };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+
+        var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+            _configuration["Jwt:Issuer"],
+            claims,
+            expires: _dateTimeService.TokenExpireDate(),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
     public void ValidateToken(string token)
