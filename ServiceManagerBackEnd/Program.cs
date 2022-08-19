@@ -8,6 +8,7 @@ using ServiceManagerBackEnd.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context, configuration) =>
 {
+    configuration.WriteTo.Console();
     configuration.WriteTo.File("Logs\\log.txt", rollingInterval: RollingInterval.Day);
 });
 
